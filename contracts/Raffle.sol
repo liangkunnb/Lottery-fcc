@@ -93,6 +93,8 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     ) internal override {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address recentWinner = s_players[indexOfWinner];
+        s_players = new address[](0);
+        s_raffleState = RaffleState.OPEN;
         s_recentWinner = recentWinner;
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         if (!success) {
@@ -100,15 +102,39 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         }
     }
 
-    function getEntranceFee() public view returns (uint256) {
-        return i_entranceFee;
+    function getRaffleStatus() public view returns (RaffleState) {
+        return s_raffleState;
+    }
+
+    function getNumWords() public pure returns (uint32) {
+        return NUM_WORDS;
+    }
+
+    function getRequestConfirmations() public pure returns (uint16) {
+        return REQUEST_CONFIRMATIONS;
+    }
+
+    function getRecentWinner() public view returns (address) {
+        return s_recentWinner;
     }
 
     function getPlayer(uint256 index) public view returns (address) {
         return s_players[index];
     }
 
-    function getRecentWinner() public view returns (address) {
-        return s_recentWinner;
+    function getLastTimeStamp() public view returns (uint256) {
+        return s_lastTimeStamp;
+    }
+
+    function getInterval() public view returns (uint256) {
+        return i_interval;
+    }
+
+    function getEntranceFee() public view returns (uint256) {
+        return i_entranceFee;
+    }
+
+    function getNumberOfPlayers() public view returns (uint256) {
+        return s_players.length;
     }
 }
