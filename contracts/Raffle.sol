@@ -33,22 +33,41 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
     event RaffleEnter(address indexed player);
     event RequestedRaffleWinner(uint256 indexed requestId);
 
+    /* Functions */
     constructor(
-        address vrfCoordinator,
-        uint256 entranceFee,
-        bytes32 gasLane,
-        uint256 interval,
+        address vrfCoordinatorV2,
         uint64 subscriptionId,
+        bytes32 gasLane, // keyHash
+        uint256 interval,
+        uint256 entranceFee,
         uint32 callbackGasLimit
-    ) VRFConsumerBaseV2(vrfCoordinator) {
-        i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinator);
-        i_entranceFee = entranceFee;
+    ) VRFConsumerBaseV2(vrfCoordinatorV2) {
+        i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);
         i_gasLane = gasLane;
         i_interval = interval;
         i_subscriptionId = subscriptionId;
-        i_callbackGasLimit = callbackGasLimit;
+        i_entranceFee = entranceFee;
+        s_raffleState = RaffleState.OPEN;
         s_lastTimeStamp = block.timestamp;
+        i_callbackGasLimit = callbackGasLimit;
     }
+
+    // constructor(
+    //     address vrfCoordinator,
+    //     uint256 entranceFee,
+    //     bytes32 gasLane,
+    //     uint256 interval,
+    //     uint64 subscriptionId,
+    //     uint32 callbackGasLimit
+    // ) VRFConsumerBaseV2(vrfCoordinator) {
+    //     i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinator);
+    //     i_entranceFee = entranceFee;
+    //     i_gasLane = gasLane;
+    //     i_interval = interval;
+    //     i_subscriptionId = subscriptionId;
+    //     i_callbackGasLimit = callbackGasLimit;
+    //     s_lastTimeStamp = block.timestamp;
+    // }
 
     function inenterRaffle() public payable {
         if (msg.value < i_entranceFee) {
